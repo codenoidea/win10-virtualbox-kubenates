@@ -1,5 +1,5 @@
-# win10-virtualbox-kubenates
-윈도우10에 virtualbox에 kubenates 설치하기
+# win10-virtualbox-kubernetes
+윈도우10에 virtualbox에 kubernetes 설치하기
 
 # virtualbox 머신 생성
 ```
