@@ -59,7 +59,7 @@ vi 01-network-manager-all.yaml 실행
 호스트확인: hostname -I 실행
 reboot 실행
 ```
-# 도커 및 쿠버네티스 설치
+도커 및 쿠버네티스 설치
 ```
 루트계정: sudo -i 실행
 apt install docker.io 실행
@@ -79,6 +79,62 @@ apt install docker.io 실행
 sh kubeadm-install.sh 실행
 설치확인: kubeadm version 실행
 마스터 머신 중지
+```
+# 워커머신 생성
+```
+마스터 머신 복제
+MAC 주소 정책에서 모든 네트워크 어댑터의 새 MAC 주소 생성 선택
+완전한 복제를 선택
+```
+워커머신 시작 후 터미널 접속
+```
+sudo -i 실행
+호스트네임 변경: hostnamectl set-hostname node01 실행
+```
+Host Only Ethernet 설정
+```
+cd /etc/netplan/ 실행
+vi 01-network-manager-all.yaml 실행
+ (아래내용 저장)
+ # Let NetworkManager manage all devices on this system
+ network:
+   version: 2
+   renderer: NetworkManager
+   ethernets:
+     enp0s8:
+       dhcp6: no
+       addresses:
+       - 192.168.72.102/24
+       gateway4: 192.168.72.1
+       nameservers:
+         addresses: [8.8.8.8, 8.8.4.4]
+설정 저장: netplan apply 실행
+호스트확인: hostname -I 실행
+reboot 실행
+```
+마스터 머신 시작 후 터미널 접속
+```
+sudo -i 실행
+kubeadm init 실행
+ mkdir부터 3줄까지 복사 후 터미널 새탭열고 붙여넣기 실행
+Kubeadm join~ 복사
+```
+워커머신 터미널 접속
+```
+Kubeadm join~ 복사한것 실행
+```
+마스터머신 터미널 접속
+```
+kubectl get nodes 실행
+```
+# Overlay Network 설치
+마스터머신 터미널 접속
+```
+Weave net을 설치: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')" 실행
+kubectl get nodes 실행
+kubectl create deploy nginx-deploy --image=nginx 실행
+kubectl get pods -o wide 실행
+kubectl delete deploy nginx-deploy 실행
 ```
 
 # 참고
