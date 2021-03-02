@@ -43,7 +43,42 @@ Host Only Ethernet 설정
 cd /etc/netplan/ 실행
 vi 01-network-manager-all.yaml 실행
  (아래내용 저장)
+ # Let NetworkManager manage all devices on this system
+ network:
+   version: 2
+   renderer: NetworkManager
+   ethernets:
+     enp0s8:
+       dhcp6: no
+       addresses:
+       - 192.168.72.101/24
+       gateway4: 192.168.72.1
+       nameservers:
+         addresses: [8.8.8.8, 8.8.4.4]
+설정 저장: netplan apply 실행
+호스트확인: hostname -I 실행
+reboot 실행
+```
+# 도커 및 쿠버네티스 설치
+```
+루트계정: sudo -i 실행
+apt install docker.io 실행
+스왑중단: swapoff -a 실행
+스왑완전중단: sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab 실행
+쉘 생성: vi kubeadm-install.sh
+ (아래내용 저장)
+ sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+ cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+ deb https://apt.kubernetes.io/ kubernetes-xenial main
+ EOF
+ sudo apt-get update
+ sudo apt-get install -y kubelet kubeadm kubectl
+ sudo apt-mark hold kubelet kubeadm kubectl
  
+sh kubeadm-install.sh 실행
+설치확인: kubeadm version 실행
+마스터 머신 중지
 ```
 
 # 참고
